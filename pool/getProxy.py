@@ -9,9 +9,10 @@ import asyncio
 
 import pyquery
 
-from checkProxy import checkProxy
-from config import *
-from getPage import get_page
+from pool.checkProxy import checkProxy
+from pool.getPage import get_page
+from pool.config import *
+from pool.proxyDB import ProxyDB
 
 
 class GetProxy(object):
@@ -30,16 +31,24 @@ class GetProxy(object):
             return True
 
     async def __check_proxy(self, proxy):
-        if await checkProxy(proxy):
-            self.proxies.append(proxy)
-            self.PROXY_COUNT += 1
-            print(
-                '目前已获取到可用的代理数为：\033[1;31m%s\033[0m' % self.PROXY_COUNT)
+        # 直接连续测试两次，都成功的才会添加到数据库：
+        # 并且判断是否已经存在该数据了：
+        if await checkProxy(proxy) and await checkProxy(proxy):
+            if not proxy in self.proxies:
+                self.proxies.append(proxy)
+                self.PROXY_COUNT += 1
+                print(
+                    '目前已获取到可用的代理数为：\033[1;32m%s\033[0m' % self.PROXY_COUNT)
+            else:
+                print('代理\033[1;34m %s \033[0m已经在数据库当中了...' % proxy)
 
     def get_proxies(self):
         self.get_from_66ip()
         self.get_from_yqie()
         self.get_from_kuaidaili()
+        proxyDB = ProxyDB()
+        proxyDB.del_all_proxies()
+        proxyDB.save_proxies_to_mongodb(self.proxies)
 
     def get_from_kuaidaili(self):
         proxies = []
@@ -94,7 +103,7 @@ class GetProxy(object):
     def get_from_yqie(self):
         proxies = []
         url = 'http://ip.yqie.com/ipproxy.htm'
-        if self.check_count:
+        if self.check_count():
             html = get_page(url)
             if html:
                 pq = pyquery.PyQuery(html)
@@ -118,4 +127,4 @@ class GetProxy(object):
 if __name__ == '__main__':
     getProxy = GetProxy()
     getProxy.get_proxies()
-    print(getProxy.proxies)
+    # print(getProxy.proxies)

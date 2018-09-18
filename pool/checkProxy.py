@@ -11,7 +11,7 @@ import traceback
 import aiohttp
 from fake_useragent import FakeUserAgentError, UserAgent
 
-from config import *
+from pool.config import *
 
 try:
     from asyncio import TimeoutError
@@ -30,21 +30,21 @@ async def checkProxy(proxy, options={}):
                     async with session.get(TEST_API, proxy=url, timeout=CHECK_TIMEOUT) as response:
                         if response.status == 200:
                             print(
-                                '代理\033[1;34m %s \033[0m\033[1;31m测试通过\033[0m准备写入数据库...' % proxy)
+                                '代理\033[1;34m %s \033[0m\033[1;32m测试通过...\033[0m' % proxy)
                             return True
                 except (ProxyConnectionError, TimeoutError, ValueError):
                     # traceback.print_exc()
                     print(
-                        '代理\033[1;34m %s \033[0m\033[1;31m测试无效\033[0m已经舍弃...' % proxy)
+                        '代理\033[1;34m %s \033[0m\033[1;31m测试无效\033[0m...' % proxy)
                     return False
 
         except (ServerDisconnectedError, ClientResponseError, ClientConnectorError) as s:
-            print(s)
+            # print(s)
             print(
-                '代理\033[1;34m %s \033[0m\033[1;31m测试无效\033[0m已经舍弃...' % proxy)
+                '代理\033[1;34m %s \033[0m\033[1;31m测试无效\033[0m...' % proxy)
             return False
         except:
-            traceback.print_exc()
+            # traceback.print_exc()
             print(
-                '代理\033[1;34m %s \033[0m\033[1;31m测试无效\033[0m已经舍弃...' % proxy)
+                '代理\033[1;34m %s \033[0m\033[1;31m测试无效\033[0m...' % proxy)
             return False

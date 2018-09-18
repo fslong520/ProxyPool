@@ -10,7 +10,7 @@ import requests
 from fake_useragent import FakeUserAgentError, UserAgent
 from requests.exceptions import ConnectionError
 
-from config import *
+from pool.config import *
 
 
 def get_page(url, options={}):
@@ -28,7 +28,7 @@ def get_page(url, options={}):
     try:
         r = requests.get(url, headers=headers, timeout=GET_TIMEOUT)
         if r.status_code == 200:
-            print('成功获取\033[1;34m %s \033[0m的数据\033[1;35m %s OK\033[0m，开始解析...' % (
+            print('成功获取\033[1;34m %s \033[0m的数据\033[1;35m%s OK\033[0m开始解析...' % (
                 url, r.status_code))
             try:
                 return r.content.decode('utf-8')
