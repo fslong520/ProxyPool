@@ -33,7 +33,7 @@ class GetProxy(object):
     async def __check_proxy(self, proxy):
         # 直接连续测试两次，都成功的才会添加到数据库：
         # 并且判断是否已经存在该数据了：
-        if await checkProxy(proxy) and await checkProxy(proxy):
+        if await checkProxy(proxy):
             if not proxy in self.proxies:
                 self.proxies.append(proxy)
                 self.PROXY_COUNT += 1
@@ -103,7 +103,7 @@ class GetProxy(object):
     def get_from_yqie(self):
         proxies = []
         url = 'http://ip.yqie.com/ipproxy.htm'
-        if self.check_count():
+        if self.PROXY_COUNT < MAX_PROXIES_NUM:
             html = get_page(url)
             if html:
                 pq = pyquery.PyQuery(html)
@@ -122,6 +122,7 @@ class GetProxy(object):
                     loop = asyncio.get_event_loop()
                     tasks = [self.__check_proxy(proxy) for proxy in proxies]
                     loop.run_until_complete(asyncio.wait(tasks))
+        self.check_count()
 
 
 if __name__ == '__main__':
