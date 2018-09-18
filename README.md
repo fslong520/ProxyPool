@@ -18,7 +18,7 @@
 4. 同样的也可以直接查看Pipfile文件夹里 `[packages]` 下所有模块逐个安装，然后不在虚拟环境下运行。
 ### 二、 代理池使用说明：
 1. examples文件夹下面有使用示例，可以进行查看；
-2. 首先请启动mongodb服务，相关请查阅mongodb有关资料(建议查看官方文档，如 [Debian系统mongodb安装配置说明](https://docs.mongodb.com/master/tutorial/install-mongodb-on-debian/?_ga=2.196215400.576766313.1537239502-183274682.1537153037) 这里的安装、配置及使用过程中，确实有些坑，具体相信你能搞定)；
+2. 首先请启动mongodb服务，相关请查阅mongodb有关资料(建议查看官方文档，如 [Debian系统mongodb安装配置说明](https://docs.mongodb.com/master/tutorial/install-mongodb-on-debian/?_ga=2.196215400.576766313.1537239502-183274682.1537153037) ，当然，这里的安装、配置及使用过程中，确实有些坑，具体相信你能搞定)；
 3. 然后直接 `python main.py` 即可启动服务；
 4. 之后访问你在config里设置的地址即可访问，返回数据是json格式；
 5. `127.0.0.1:8000/`是欢迎页面；
