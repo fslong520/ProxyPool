@@ -55,7 +55,7 @@ class GetProxy(object):
         base_url = 'https://www.kuaidaili.com/free/intr/{}/'  # 透明代理
         # base_url = 'https://www.kuaidaili.com/free/inha/{}/'  # 高匿代理
         page = 0
-        while self.PROXY_COUNT < MAX_PROXIES_NUM and page < 10:
+        while self.PROXY_COUNT < MAX_PROXIES_NUM and page < 50:
             page += 1
             url = base_url.format(page)
             html = get_page(url)
@@ -78,7 +78,7 @@ class GetProxy(object):
         proxies = []
         base_url = 'http://www.66ip.cn/{}.html'  # 多数是高匿代理
         page = 0
-        while self.PROXY_COUNT < MAX_PROXIES_NUM and page < 10:
+        while self.PROXY_COUNT < MAX_PROXIES_NUM and page < 50:
             page += 1
             url = base_url.format(page)
             html = get_page(url)

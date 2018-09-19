@@ -16,45 +16,51 @@ from pool.config import *
 
 
 class Api(object):
+    def __init__(self):
+        self.proxyDB = ProxyDB()
+
     async def index(self, request):
         # await asyncio.sleep(0.5)
         text = '<h2>Welcome to Proxy Pool System</h2>'
         return web.Response(text=text, content_type='text/html')
 
     async def proxy(self, request):
-        proxyDB = ProxyDB()
         try:
-            _proxy = proxyDB.get_proxy()
+            _proxy = self.proxyDB.get_proxy()
             result = {'ip': _proxy['ip'], 'port': _proxy['port']}
             text = json.dumps(result)
             return web.Response(text=text, content_type='application/json')
         except:
-            result = proxyDB.get_proxy()
+            result = self.proxyDB.get_proxy()
             return web.Response(text=str(result), content_type='text/html')
 
     async def proxies(self, request):
-        proxyDB = ProxyDB()
+        allProxiesNum = self.proxyDB.get_proxies_num()
         try:
             num = int(request.match_info['num'])
+            if num > MIN_PROXIES_NUM:
+                num = MIN_PROXIES_NUM
+            if num > allProxiesNum:
+                num = allProxiesNum
         except:
-            num = 10
+            num = MIN_PROXIES_NUM
         try:
             result = []
-            _proxies = proxyDB.get_proxies(num=num)
+            _proxies = self.proxyDB.get_proxies(num=num)
             for _proxy in _proxies:
                 result.append({'ip': _proxy['ip'], 'port': _proxy['port']})
             text = json.dumps(result)
             return web.Response(text=text, content_type='application/json')
         except:
-            result = proxyDB.get_proxies(num=num)
+            result = self.proxyDB.get_proxies(num=num)
             return web.Response(text=result, content_type='text/html')
 
     async def init(self, loop):
         app = web.Application()
-        app.router.add_route('GET', '/', self.index)
+        app.router.add_route('GET', '', self.index)
         app.router.add_route('GET', '/proxy', self.proxy)
-        app.router.add_route('GET', '/proxies/{num}/', self.proxies)
-        app.router.add_route('GET', '/proxies/', self.proxies)
+        app.router.add_route('GET', '/proxies/{num}', self.proxies)
+        app.router.add_route('GET', '/proxies', self.proxies)
         srv = await loop.create_server(app._make_handler(), '127.0.0.1', API_PORT)
         print('Server started at http://127.0.0.1:%s...' % API_PORT)
         return srv
