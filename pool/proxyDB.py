@@ -35,6 +35,7 @@ class ProxyDB(object):
                 self.collection.insert_one(data)
             except:
                 traceback.print_exc()
+                return False
 
         print('\033[1;35m%s\033[0m个代理存入数据库成功！' % len(proxies))
 

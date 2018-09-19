@@ -31,7 +31,10 @@ class Service(object):
 
     async def __check_proxy(self, proxy):
         if not await checkProxy(proxy['ip']+':'+proxy['port']):
-            self.proxyDB.del_proxy(proxy['id'])
+            # 首次检测无效之后进行第二次检测，如果依然无效就删库跑路:
+            if not await checkProxy(proxy['ip']+':'+proxy['port'], count=2):
+                if not await checkProxy(proxy['ip']+':'+proxy['port'], count=3):
+                    self.proxyDB.del_proxy(proxy['id'])
 
     def check_proxies_istrue(self):
         print(

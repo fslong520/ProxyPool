@@ -1,5 +1,5 @@
 # 代理池中最少的代理数量，小于这个数量就重新爬取；
-MIN_PROXIES_NUM = 5
+MIN_PROXIES_NUM = 10
 # 代理池中代理数量上限，多余这个数量就停止爬取；
 MAX_PROXIES_NUM = 100
 # 设置爬取的超时时间：

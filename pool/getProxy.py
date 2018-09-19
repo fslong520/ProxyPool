@@ -33,14 +33,14 @@ class GetProxy(object):
     async def __check_proxy(self, proxy):
         # 直接连续测试两次，都成功的才会添加到数据库：
         # 并且判断是否已经存在该数据了：
-        if await checkProxy(proxy):
-            if not proxy in self.proxies:
+        if not proxy in self.proxies:
+            if await checkProxy(proxy):
                 self.proxies.append(proxy)
                 self.PROXY_COUNT += 1
                 print(
                     '目前已获取到可用的代理数为：\033[1;32m%s\033[0m' % self.PROXY_COUNT)
-            else:
-                print('代理\033[1;34m %s \033[0m已经在数据库当中了...' % proxy)
+        else:
+            print('代理\033[1;34m %s \033[0m已经在数据库当中了...' % proxy)
 
     def get_proxies(self):
         self.get_from_66ip()
@@ -48,7 +48,10 @@ class GetProxy(object):
         self.get_from_yqie()
         proxyDB = ProxyDB()
         proxyDB.del_all_proxies()
-        proxyDB.save_proxies_to_mongodb(self.proxies)
+        try:
+            proxyDB.save_proxies_to_mongodb(self.proxies)
+        except:
+            pass
 
     def get_from_kuaidaili(self):
         proxies = []

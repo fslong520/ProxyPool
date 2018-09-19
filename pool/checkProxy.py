@@ -20,22 +20,33 @@ except:
     from aiohttp import ClientProxyConnectionError as ProxyConnectionError, ServerDisconnectedError, ClientResponseError, ClientConnectorError
 
 
-async def checkProxy(proxy, options={}):
+async def checkProxy(proxy, options={}, count=1):
     if not proxy.startswith('http'):
-        print('检测\033[1;34m %s \033[0m的有效性...' % proxy)
+        if count==1:
+            print('检测\033[1;34m %s \033[0m的有效性...' % proxy)
+        else:
+            print('再次检测\033[1;34m %s \033[0m的有效性...' % proxy)
         url = 'http://'+proxy
         try:
             async with aiohttp.ClientSession() as session:
                 try:
                     async with session.get(TEST_API, proxy=url, timeout=CHECK_TIMEOUT) as response:
                         if response.status == 200:
-                            print(
-                                '代理\033[1;34m %s \033[0m\033[1;32m测试通过...\033[0m' % proxy)
+                            if count==1:
+                                print(
+                                    '代理\033[1;34m %s \033[0m\033[1;32m测试通过...\033[0m' % proxy)
+                            else:
+                                print(
+                                    '经过再次检测，代理\033[1;34m %s \033[0m\033[1;32m测试通过...\033[0m' % proxy)
                             return True
                 except (ProxyConnectionError, TimeoutError, ValueError):
                     # traceback.print_exc()
-                    print(
-                        '代理\033[1;34m %s \033[0m\033[1;31m测试无效\033[0m...' % proxy)
+                    if count==1:
+                        print(
+                            '代理\033[1;34m %s \033[0m\033[1;31m测试无效\033[0m...' % proxy)
+                    else:
+                        print(
+                            '非常抱歉，经过再次检测，代理\033[1;34m %s \033[0m\033[1;31m还是无效\033[0m...' % proxy)
                     return False
 
         except (ServerDisconnectedError, ClientResponseError, ClientConnectorError) as s:
