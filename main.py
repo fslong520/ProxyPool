@@ -23,11 +23,14 @@ class Service(object):
 
     def check_proxies_num(self):
         proxiesNum = self.proxyDB.get_proxies_num()
-        if proxiesNum < MIN_PROXIES_NUM:
-            print(
-                '\033[1;31m由于可用代理数量已经低于设定的代理池最小数量:%s，将会重新抓取并重建数据库...\033[0m' % MIN_PROXIES_NUM)
-            getProxy = GetProxy()
-            getProxy.get_proxies()
+        if proxiesNum:
+            if proxiesNum < MIN_PROXIES_NUM:
+                print(
+                    '\033[1;31m由于可用代理数量已经低于设定的代理池最小数量:%s，将会重新抓取并重建数据库...\033[0m' % MIN_PROXIES_NUM)
+                getProxy = GetProxy()
+                getProxy.get_proxies()
+        else:
+            pass
 
     async def __check_proxy(self, proxy):
         if not await checkProxy(proxy['ip']+':'+proxy['port']):
@@ -40,14 +43,17 @@ class Service(object):
         print(
             '\033[1;32m\n-------------------------------\n开始检测代理池中代理的有效性...\n-------------------------------\n\033[0m')
         proxies = self.proxyDB.get_all_proxies()
-        if not proxies == []:
-            loop = asyncio.get_event_loop()
-            tasks = [self.__check_proxy(proxy) for proxy in proxies]
-            loop.run_until_complete(asyncio.wait(tasks))
-            print('还剩下\033[1;35m%s\033[0m个可用代理，\033[1;32m%s\033[0m秒后将会重新检测...' %
-                  (self.proxyDB.get_proxies_num(), CHECK_TIMEDELAY))
-        self.check_proxies_num()
-        time.sleep(CHECK_TIMEDELAY)
+        if proxies:
+            if not proxies == []:
+                loop = asyncio.get_event_loop()
+                tasks = [self.__check_proxy(proxy) for proxy in proxies]
+                loop.run_until_complete(asyncio.wait(tasks))
+                print('还剩下\033[1;35m%s\033[0m个可用代理，\033[1;32m%s\033[0m秒后将会重新检测...' %
+                    (self.proxyDB.get_proxies_num(), CHECK_TIMEDELAY))
+            self.check_proxies_num()
+            time.sleep(CHECK_TIMEDELAY)
+        else:
+            pass
 
 
 def main():
